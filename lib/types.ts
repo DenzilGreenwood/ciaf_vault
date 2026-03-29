@@ -155,4 +155,5 @@ export interface IngestEventPayload {
   event_type: 'core' | 'web'
   event_data: Partial<CoreEvent> | Partial<WebEvent>
   generate_receipt?: boolean
+  enforce_policy?: boolean // Default: true for web events
 }

@@ -109,7 +109,7 @@ export function EventTypeChart() {
           No event data available
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={280} minWidth={450}>
           <PieChart>
             <Pie
               data={data}

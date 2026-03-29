@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@/lib/supabase'
 import type { IngestEventPayload, APIResponse } from '@/lib/types'
 import { createHash, randomBytes } from 'crypto'
+import { PolicyEngine } from '@/lib/policy/PolicyEngine'
+import { PIIDetector } from '@/lib/detection/PIIDetector'
+import { ShadowAIDetector } from '@/lib/detection/ShadowAIDetector'
 
 /**
  * POST /api/events/ingest
@@ -11,7 +14,8 @@ import { createHash, randomBytes } from 'crypto'
  * {
  *   "event_type": "core" | "web",
  *   "event_data": { ...event fields },
- *   "generate_receipt": true (optional)
+ *   "generate_receipt": true (optional),
+ *   "enforce_policy": true (optional, default: true for web events)
  * }
  */
 export async function POST(request: NextRequest) {
@@ -38,6 +42,55 @@ export async function POST(request: NextRequest) {
     // Set timestamp if not provided
     if (!payload.event_data.timestamp) {
       payload.event_data.timestamp = new Date().toISOString()
+    }
+
+    // Policy enforcement for web events
+    let policyResult: any = null
+    let shadowAIResult: any = null
+    let piiResult: any = null
+
+    if (payload.event_type === 'web' && payload.enforce_policy !== false) {
+      const webData = payload.event_data as any
+      const policyEngine = new PolicyEngine()
+
+      // Evaluate policy
+      policyResult = policyEngine.evaluate({
+        toolName: webData.tool_name || 'Unknown',
+        toolUrl: webData.tool_url,
+        content: webData.content_summary || webData.prompt_text,
+        orgId: webData.org_id || 'default',
+        userId: webData.user_id || 'unknown',
+      })
+
+      shadowAIResult = policyResult.shadowAI
+      piiResult = policyResult.pii
+
+      // Update event data with policy results
+      webData.policy_decision = policyResult.decision
+      webData.is_shadow_ai = shadowAIResult?.isShadowAI || false
+      webData.pii_detected = piiResult?.detected || false
+      webData.pii_types = piiResult?.types || []
+      webData.sensitivity_score = piiResult?.sensitivityScore || 0
+      webData.detection_method = shadowAIResult?.detectionMethod || null
+      webData.policy_rule_id = policyResult.matchedRules[0]?.id || null
+
+      // If blocked, return early
+      if (policyResult.decision === 'BLOCK') {
+        return NextResponse.json<APIResponse<any>>(
+          {
+            success: false,
+            error: 'Policy violation: Event blocked',
+            data: {
+              decision: 'BLOCK',
+              reason: policyResult.reason,
+              shadow_ai: shadowAIResult,
+              pii: piiResult,
+              matched_rules: policyResult.matchedRules.map((r: any) => r.id),
+            },
+          },
+          { status: 403 }
+        )
+      }
     }
 
     // Generate content hash
@@ -134,8 +187,20 @@ export async function POST(request: NextRequest) {
         data: {
           event: insertedEvent,
           receipt: receipt,
+          policy: policyResult
+            ? {
+                decision: policyResult.decision,
+                reason: policyResult.reason,
+                shadow_ai: shadowAIResult?.isShadowAI,
+                pii_detected: piiResult?.detected,
+                sensitivity_score: piiResult?.sensitivityScore,
+              }
+            : null,
         },
-        message: 'Event ingested successfully',
+        message:
+          policyResult?.decision === 'WARN'
+            ? `Event ingested with warning: ${policyResult.reason}`
+            : 'Event ingested successfully',
       },
       { status: 201 }
     )
