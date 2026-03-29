@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description: 'Single Source of Truth for CIAF AI Lifecycle Events - Cognitive Insight™ Audit Framework',
   keywords: ['CIAF', 'AI Governance', 'LCM', 'Audit Trail', 'AI Observability'],
   authors: [{ name: 'Denzil James Greenwood', url: 'https://cognitiveinsight.ai' }],
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({

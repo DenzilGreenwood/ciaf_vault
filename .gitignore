@@ -40,3 +40,6 @@ next-env.d.ts
 *.swp
 *.swo
 *~
+
+# NOT FOR RELEASE - DO NOT COMMIT
+NOTE_TO_SELF.txt
