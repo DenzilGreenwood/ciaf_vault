@@ -109,17 +109,33 @@ export function EventTypeChart() {
           No event data available
         </div>
       ) : (
-        <ResponsiveContainer width="100%" minHeight={300} minWidth={300}>
+        <ResponsiveContainer width="100%" height={320}>
           <PieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ percentage }) =>
-                ` (${percentage || 0}%)`
-              }
-              outerRadius={80}
+              label={({ cx, cy, midAngle, innerRadius, outerRadius, percentage }) => {
+                const RADIAN = Math.PI / 180
+                const radius = innerRadius + (outerRadius - innerRadius) * 0.5
+                const x = cx + radius * Math.cos(-midAngle * RADIAN)
+                const y = cy + radius * Math.sin(-midAngle * RADIAN)
+                
+                return (
+                  <text
+                    x={x}
+                    y={y}
+                    fill="white"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    className="font-semibold text-sm"
+                  >
+                    {`${percentage}%`}
+                  </text>
+                )
+              }}
+              outerRadius={110}
               fill="#8884d8"
               dataKey="value"
             >
@@ -127,7 +143,9 @@ export function EventTypeChart() {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip 
+              formatter={(value: number, name: string) => [`${value} events`, name]}
+            />
             <Legend />
           </PieChart>
         </ResponsiveContainer>
