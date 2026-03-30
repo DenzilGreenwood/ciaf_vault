@@ -170,12 +170,12 @@ export async function POST(request: NextRequest) {
         if (payload.event_type === 'core') {
           await supabase
             .from('events_core')
-            .update({ receipt_id: (receiptData as any).id } as any)
+            .update({ receipt_id: (receiptData as any).id } as never)
             .eq('event_id', payload.event_data.event_id!)
         } else {
           await supabase
             .from('events_web')
-            .update({ receipt_id: (receiptData as any).id } as any)
+            .update({ receipt_id: (receiptData as any).id } as never)
             .eq('event_id', payload.event_data.event_id!)
         }
       }

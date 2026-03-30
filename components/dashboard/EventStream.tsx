@@ -44,7 +44,7 @@ export function EventStream() {
 
       // Combine and sort
       const combined: CombinedEvent[] = [
-        ...(coreData || []).map((e) => ({
+        ...(coreData || []).map((e: any) => ({
           id: e.id,
           event_id: e.event_id,
           timestamp: e.timestamp,
@@ -55,7 +55,7 @@ export function EventStream() {
           stage: e.stage,
           hash: e.content_hash || undefined,
         })),
-        ...(webData || []).map((e) => ({
+        ...(webData || []).map((e: any) => ({
           id: e.id,
           event_id: e.event_id,
           timestamp: e.timestamp,

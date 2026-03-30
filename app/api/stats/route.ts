@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       .select('model_name')
       .not('model_name', 'is', null)
 
-    const uniqueModels = new Set(activeModels?.map((e) => e.model_name) || [])
+    const uniqueModels = new Set(activeModels?.map((e: any) => e.model_name) || [])
 
     // Get compliance violations
     const { count: complianceViolations } = await supabase

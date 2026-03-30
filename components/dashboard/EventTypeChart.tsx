@@ -45,7 +45,7 @@ export function EventTypeChart() {
       // Count occurrences
       const counts: Record<string, number> = {}
 
-      ;[...(coreData || []), ...(webData || [])].forEach((item) => {
+      ;[...(coreData || []), ...(webData || [])].forEach((item: any) => {
         counts[item.event_type] = (counts[item.event_type] || 0) + 1
       })
 

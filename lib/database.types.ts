@@ -343,9 +343,343 @@ export interface Database {
         }
         Relationships: []
       }
+      agent_identities: {
+        Row: {
+          id: string
+          principal_id: string
+          principal_type: string
+          display_name: string
+          roles: string[]
+          attributes: Json
+          status: string
+          fingerprint: string | null
+          created_at: string
+          updated_at: string
+          created_by: string | null
+          suspended_at: string | null
+          suspended_by: string | null
+          suspension_reason: string | null
+        }
+        Insert: {
+          principal_id: string
+          principal_type: string
+          display_name: string
+          roles?: string[]
+          attributes?: Json
+          status?: string
+          fingerprint?: string | null
+          created_by?: string | null
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
+        }
+        Update: {
+          principal_id?: string
+          principal_type?: string
+          display_name?: string
+          roles?: string[]
+          attributes?: Json
+          status?: string
+          fingerprint?: string | null
+          created_by?: string | null
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspension_reason?: string | null
+        }
+        Relationships: []
+      }
+      agent_actions: {
+        Row: {
+          id: string
+          action_id: string
+          principal_id: string
+          principal_type: string
+          action: string
+          resource_id: string
+          resource_type: string
+          resource_tenant: string | null
+          params: Json
+          params_hash: string | null
+          justification: string | null
+          correlation_id: string | null
+          decision: boolean
+          reason: string
+          elevation_grant_id: string | null
+          executed: boolean
+          result: Json | null
+          error: string | null
+          execution_duration_ms: number | null
+          policy_obligations: string[]
+          receipt_id: string | null
+          metadata: Json
+          timestamp: string
+          created_at: string
+        }
+        Insert: {
+          action_id: string
+          principal_id: string
+          principal_type: string
+          action: string
+          resource_id: string
+          resource_type: string
+          resource_tenant?: string | null
+          params?: Json
+          params_hash?: string | null
+          justification?: string | null
+          correlation_id?: string | null
+          decision: boolean
+          reason: string
+          elevation_grant_id?: string | null
+          executed?: boolean
+          result?: Json | null
+          error?: string | null
+          execution_duration_ms?: number | null
+          policy_obligations?: string[]
+          receipt_id?: string | null
+          metadata?: Json
+          timestamp?: string
+        }
+        Update: {
+          action_id?: string
+          principal_id?: string
+          principal_type?: string
+          action?: string
+          resource_id?: string
+          resource_type?: string
+          resource_tenant?: string | null
+          params?: Json
+          params_hash?: string | null
+          justification?: string | null
+          correlation_id?: string | null
+          decision?: boolean
+          reason?: string
+          elevation_grant_id?: string | null
+          executed?: boolean
+          result?: Json | null
+          error?: string | null
+          execution_duration_ms?: number | null
+          policy_obligations?: string[]
+          receipt_id?: string | null
+          metadata?: Json
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_agent_identity"
+            columns: ["principal_id"]
+            referencedRelation: "agent_identities"
+            referencedColumns: ["principal_id"]
+          }
+        ]
+      }
+      elevation_grants: {
+        Row: {
+          id: string
+          grant_id: string
+          principal_id: string
+          elevated_role: string
+          scope: Json
+          approved_by: string
+          approval_ticket: string | null
+          purpose: string
+          justification: string | null
+          granted_at: string
+          valid_from: string
+          valid_until: string
+          used_count: number
+          max_uses: number | null
+          last_used_at: string | null
+          status: string
+          revoked_at: string | null
+          revoked_by: string | null
+          revocation_reason: string | null
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          grant_id: string
+          principal_id: string
+          elevated_role: string
+          scope?: Json
+          approved_by: string
+          approval_ticket?: string | null
+          purpose: string
+          justification?: string | null
+          granted_at?: string
+          valid_from?: string
+          valid_until: string
+          used_count?: number
+          max_uses?: number | null
+          last_used_at?: string | null
+          status?: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          revocation_reason?: string | null
+          metadata?: Json
+        }
+        Update: {
+          grant_id?: string
+          principal_id?: string
+          elevated_role?: string
+          scope?: Json
+          approved_by?: string
+          approval_ticket?: string | null
+          purpose?: string
+          justification?: string | null
+          granted_at?: string
+          valid_from?: string
+          valid_until?: string
+          used_count?: number
+          max_uses?: number | null
+          last_used_at?: string | null
+          status?: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          revocation_reason?: string | null
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_grant_principal"
+            columns: ["principal_id"]
+            referencedRelation: "agent_identities"
+            referencedColumns: ["principal_id"]
+          }
+        ]
+      }
+      agent_receipts: {
+        Row: {
+          id: string
+          receipt_id: string
+          action_id: string
+          timestamp: string
+          principal_id: string
+          principal_type: string
+          action: string
+          resource_id: string
+          resource_type: string
+          correlation_id: string | null
+          decision: boolean
+          reason: string
+          elevation_grant_id: string | null
+          approved_by: string | null
+          params_hash: string
+          prior_receipt_hash: string
+          receipt_hash: string
+          signature: string
+          signature_algorithm: string
+          policy_obligations: string[]
+          metadata: Json
+          chain_sequence: number | null
+          created_at: string
+        }
+        Insert: {
+          receipt_id: string
+          action_id: string
+          timestamp?: string
+          principal_id: string
+          principal_type: string
+          action: string
+          resource_id: string
+          resource_type: string
+          correlation_id?: string | null
+          decision: boolean
+          reason: string
+          elevation_grant_id?: string | null
+          approved_by?: string | null
+          params_hash: string
+          prior_receipt_hash?: string
+          receipt_hash: string
+          signature: string
+          signature_algorithm?: string
+          policy_obligations?: string[]
+          metadata?: Json
+          chain_sequence?: number | null
+        }
+        Update: {
+          receipt_id?: string
+          action_id?: string
+          timestamp?: string
+          principal_id?: string
+          principal_type?: string
+          action?: string
+          resource_id?: string
+          resource_type?: string
+          correlation_id?: string | null
+          decision?: boolean
+          reason?: string
+          elevation_grant_id?: string | null
+          approved_by?: string | null
+          params_hash?: string
+          prior_receipt_hash?: string
+          receipt_hash?: string
+          signature?: string
+          signature_algorithm?: string
+          policy_obligations?: string[]
+          metadata?: Json
+          chain_sequence?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_receipt_action"
+            columns: ["action_id"]
+            referencedRelation: "agent_actions"
+            referencedColumns: ["action_id"]
+          },
+          {
+            foreignKeyName: "fk_receipt_principal"
+            columns: ["principal_id"]
+            referencedRelation: "agent_identities"
+            referencedColumns: ["principal_id"]
+          }
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      active_agents_summary: {
+        Row: {
+          principal_id: string | null
+          display_name: string | null
+          principal_type: string | null
+          roles: string[] | null
+          status: string | null
+          tenant_id: string | null
+          total_actions: number | null
+          actions_allowed: number | null
+          actions_denied: number | null
+          last_action_at: string | null
+          active_grants: number | null
+        }
+      }
+      recent_violations: {
+        Row: {
+          action_id: string | null
+          principal_id: string | null
+          display_name: string | null
+          action: string | null
+          resource_type: string | null
+          resource_id: string | null
+          reason: string | null
+          timestamp: string | null
+          correlation_id: string | null
+        }
+      }
+      active_elevations: {
+        Row: {
+          grant_id: string | null
+          principal_id: string | null
+          display_name: string | null
+          elevated_role: string | null
+          scope: Json | null
+          approved_by: string | null
+          purpose: string | null
+          valid_from: string | null
+          valid_until: string | null
+          used_count: number | null
+          max_uses: number | null
+          approval_ticket: string | null
+        }
+      }
     }
     Functions: {
       [_ in never]: never

@@ -59,7 +59,7 @@ export function TimelineChart() {
       }
 
       // Count core events
-      ;(coreData || []).forEach((item) => {
+      ;(coreData || []).forEach((item: any) => {
         const date = format(new Date(item.timestamp), 'MMM dd')
         if (dateMap[date]) {
           dateMap[date].core++
@@ -67,7 +67,7 @@ export function TimelineChart() {
       })
 
       // Count web events
-      ;(webData || []).forEach((item) => {
+      ;(webData || []).forEach((item: any) => {
         const date = format(new Date(item.timestamp), 'MMM dd')
         if (dateMap[date]) {
           dateMap[date].web++

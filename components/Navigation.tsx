@@ -9,6 +9,7 @@ import {
   ShieldCheck, 
   BarChart3, 
   FileCheck,
+  Users,
   Menu,
   X
 } from 'lucide-react'
@@ -19,6 +20,7 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Models', href: '/models', icon: Cpu },
   { name: 'Web Events', href: '/web', icon: Globe },
+  { name: 'Agents', href: '/agents', icon: Users },
   { name: 'Compliance', href: '/compliance', icon: ShieldCheck },
   { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Receipts', href: '/receipts', icon: FileCheck },

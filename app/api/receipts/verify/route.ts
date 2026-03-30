@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     // Step 3: Verify content hash
     if (event) {
-      const expectedHash = event.content_hash
+      const expectedHash = (event as any).content_hash
       const actualHash = receipt.content_hash
 
       if (expectedHash === actualHash) {

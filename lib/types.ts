@@ -157,3 +157,190 @@ export interface IngestEventPayload {
   generate_receipt?: boolean
   enforce_policy?: boolean // Default: true for web events
 }
+
+// ===================================================
+// Agent Tracking Types (Agentic Execution Boundaries)
+// ===================================================
+
+export type PrincipalType = 'agent' | 'service' | 'human' | 'system'
+export type AgentStatus = 'active' | 'suspended' | 'revoked'
+export type GrantStatus = 'active' | 'expired' | 'revoked'
+
+// Agent Identity
+export interface AgentIdentity {
+  id: string
+  principal_id: string
+  principal_type: PrincipalType
+  display_name: string
+  roles: string[]
+  attributes: Record<string, any> // tenant_id, environment, department, etc.
+  status: AgentStatus
+  fingerprint?: string
+  created_at: string
+  updated_at: string
+  created_by?: string
+  suspended_at?: string
+  suspended_by?: string
+  suspension_reason?: string
+}
+
+// Resource Definition
+export interface Resource {
+  resource_id: string
+  resource_type: string
+  resource_tenant?: string
+}
+
+// Agent Action
+export interface AgentAction {
+  id: string
+  action_id: string
+  principal_id: string
+  principal_type: PrincipalType
+  action: string
+  resource_id: string
+  resource_type: string
+  resource_tenant?: string
+  params: Record<string, any>
+  params_hash?: string
+  justification?: string
+  correlation_id?: string
+  decision: boolean // true=allowed, false=denied
+  reason: string
+  elevation_grant_id?: string
+  executed: boolean
+  result?: any
+  error?: string
+  execution_duration_ms?: number
+  policy_obligations?: string[]
+  receipt_id?: string
+  metadata: Record<string, any>
+  timestamp: string
+  created_at: string
+}
+
+// Elevation Grant (PAM)
+export interface ElevationGrant {
+  id: string
+  grant_id: string
+  principal_id: string
+  elevated_role: string
+  scope: Record<string, any> // {actions: [], resource_types: [], max_amount: 100000}
+  approved_by: string
+  approval_ticket?: string
+  purpose: string
+  justification?: string
+  granted_at: string
+  valid_from: string
+  valid_until: string
+  used_count: number
+  max_uses?: number
+  last_used_at?: string
+  status: GrantStatus
+  revoked_at?: string
+  revoked_by?: string
+  revocation_reason?: string
+  metadata: Record<string, any>
+  created_at: string
+}
+
+// Agent Receipt (Cryptographic Evidence)
+export interface AgentReceipt {
+  id: string
+  receipt_id: string
+  action_id: string
+  timestamp: string
+  principal_id: string
+  principal_type: PrincipalType
+  action: string
+  resource_id: string
+  resource_type: string
+  correlation_id?: string
+  decision: boolean
+  reason: string
+  elevation_grant_id?: string
+  approved_by?: string
+  params_hash: string
+  prior_receipt_hash: string
+  receipt_hash: string
+  signature: string
+  signature_algorithm: string
+  policy_obligations?: string[]
+  metadata: Record<string, any>
+  chain_sequence?: number
+  created_at: string
+}
+
+// Agent Registration Payload
+export interface RegisterAgentPayload {
+  principal_id: string
+  principal_type: PrincipalType
+  display_name: string
+  roles: string[]
+  attributes?: Record<string, any>
+  created_by?: string
+}
+
+// Action Execution Request
+export interface ExecuteActionRequest {
+  principal_id: string
+  action: string
+  resource: Resource
+  params?: Record<string, any>
+  justification?: string
+  correlation_id?: string
+  elevation_grant_id?: string
+}
+
+// Action Execution Response
+export interface ExecuteActionResponse {
+  allowed: boolean
+  reason: string
+  action_id: string
+  receipt?: AgentReceipt
+  policy_obligations?: string[]
+  elevation_required?: boolean
+  available_roles?: string[]
+}
+
+// Grant Creation Request
+export interface GrantElevationRequest {
+  principal_id: string
+  elevated_role: string
+  scope: Record<string, any>
+  approved_by: string
+  approval_ticket?: string
+  purpose: string
+  justification?: string
+  valid_from?: string
+  valid_until: string
+  max_uses?: number
+}
+
+// Agent Summary Statistics
+export interface AgentSummary {
+  principal_id: string
+  display_name: string
+  principal_type: PrincipalType
+  roles: string[]
+  status: AgentStatus
+  tenant_id?: string
+  total_actions: number
+  actions_allowed: number
+  actions_denied: number
+  last_action_at?: string
+  active_grants: number
+}
+
+// Violation Summary
+export interface AgentViolation {
+  action_id: string
+  principal_id: string
+  display_name: string
+  action: string
+  resource_type: string
+  resource_id: string
+  reason: string
+  timestamp: string
+  correlation_id?: string
+}
